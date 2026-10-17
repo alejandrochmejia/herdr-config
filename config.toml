@@ -61,6 +61,19 @@ description = "terminal temporal"
 width = "80%"
 height = "80%"
 
+# yazi (explorador de archivos) en popup, en la carpeta del panel activo.
+# Va en prefix+y porque prefix+e ya es edit_scrollback de herdr.
+# Windows: install.ps1 deja yazi-popup.ps1 junto a este archivo; el script relee
+# PATH y YAZI_FILE_ONE del registro. cmd.exe expande %APPDATA%.
+# macOS/Linux: install.sh reemplaza el comando por cd + exec yazi.
+[[keys.command]]
+key = "prefix+y"
+type = "popup"
+command = "powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File %APPDATA%\\herdr\\yazi-popup.ps1"
+description = "yazi"
+width = "90%"
+height = "90%"
+
 # lazygit en popup para revisar lo que hicieron los agentes.
 # Requiere lazygit en el PATH. Si lo acabas de instalar, reinicia herdr
 # (el servidor conserva el PATH de cuando arrancó).

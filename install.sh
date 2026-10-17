@@ -3,8 +3,8 @@
 # Uso:  curl -fsSL https://raw.githubusercontent.com/alejandrochmejia/herdr-config/main/install.sh | sh
 #
 # Descarga config.toml a ~/.config/herdr/config.toml (o a $HERDR_CONFIG_PATH),
-# cambia el popup de terminal de PowerShell a tu $SHELL, respalda el config
-# anterior si era distinto y recarga herdr si está corriendo.
+# cambia los popups de PowerShell (terminal y yazi) por su versión Unix,
+# respalda el config anterior si era distinto y recarga herdr si está corriendo.
 set -eu
 
 REPO_RAW="https://raw.githubusercontent.com/alejandrochmejia/herdr-config/main"
@@ -13,8 +13,11 @@ TMP="$TARGET.download"
 
 mkdir -p "$(dirname "$TARGET")"
 curl -fsSL "$REPO_RAW/config.toml" -o "$TMP.raw"
-# En Unix herdr corre los comandos con /bin/sh -c, así que ${SHELL} se expande ahí.
-sed 's|"powershell.exe -NoLogo"|"exec ${SHELL:-/bin/sh}"|' "$TMP.raw" > "$TMP"
+# En Unix herdr corre los comandos con /bin/sh -c, así que las variables se
+# expanden ahí. HERDR_ACTIVE_PANE_CWD es la carpeta del panel activo.
+sed -e 's|"powershell.exe -NoLogo"|"exec ${SHELL:-/bin/sh}"|' \
+    -e 's|^command = ".*yazi-popup\.ps1"$|command = '\''cd "${HERDR_ACTIVE_PANE_CWD:-.}" 2>/dev/null; exec yazi'\''|' \
+    "$TMP.raw" > "$TMP"
 rm -f "$TMP.raw"
 
 if [ -f "$TARGET" ] && cmp -s "$TARGET" "$TMP"; then
