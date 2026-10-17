@@ -1,0 +1,73 @@
+# herdr — config compartida (Windows, macOS, Linux)
+# Repo: https://github.com/alejandrochmejia/herdr-config
+#
+# Ubicación: Windows      %APPDATA%\herdr\config.toml
+#            macOS/Linux  ~/.config/herdr/config.toml
+# Validar:  herdr config check
+# Aplicar sin reiniciar: herdr server reload-config   (o prefijo + Shift+R)
+# Referencia completa de opciones: herdr --default-config
+
+onboarding = false
+
+# [terminal] default_shell queda sin fijar a propósito: herdr usa pwsh.exe si
+# existe y si no powershell.exe en Windows, y $SHELL (o /bin/sh) en macOS/Linux.
+
+[theme]
+name = "catppuccin"
+auto_switch = true           # sigue el modo claro/oscuro de la terminal
+light_name = "catppuccin-latte"
+dark_name = "catppuccin"
+
+[ui]
+status_indicators = "symbols"          # working/blocked/idle por forma, no solo color
+window_title = "{hostname}: {workspace}"
+tab_bar_right = [
+  { type = "zoom" },
+  { type = "hostname" },               # en qué equipo corren los paneles
+  { type = "datetime", format = "%H:%M" },
+]
+
+# Aviso cuando un agente termina o se queda esperando respuesta
+[ui.toast]
+delivery = "system"                    # notificación del sistema; clic = salta al panel
+delay_seconds = 1
+
+[ui.sound]
+enabled = true
+
+# Barra lateral: qué está haciendo Claude Code en cada panel
+[ui.sidebar.agents.rows_by_agent]
+claude = [
+  ["state_icon", "agent", "state_text"],
+  ["terminal_title_stripped"],
+  ["machine", "workspace", "tab"],
+]
+
+# Atajos extra (el prefijo sigue siendo ctrl+b)
+[keys]
+resize_pane_left  = "ctrl+shift+alt+left"
+resize_pane_right = "ctrl+shift+alt+right"
+resize_pane_up    = "ctrl+shift+alt+up"
+resize_pane_down  = "ctrl+shift+alt+down"
+
+# Terminal flotante temporal, sin romper el layout.
+# Windows corre el comando con cmd.exe /d /c; en macOS/Linux install.sh lo
+# reemplaza por tu $SHELL (allí los comandos corren con /bin/sh -c).
+[[keys.command]]
+key = "prefix+t"
+type = "popup"
+command = "powershell.exe -NoLogo"
+description = "terminal temporal"
+width = "80%"
+height = "80%"
+
+# lazygit en popup para revisar lo que hicieron los agentes.
+# Requiere lazygit en el PATH. Si lo acabas de instalar, reinicia herdr
+# (el servidor conserva el PATH de cuando arrancó).
+[[keys.command]]
+key = "prefix+alt+g"
+type = "popup"
+command = "lazygit"
+description = "lazygit"
+width = "90%"
+height = "90%"
